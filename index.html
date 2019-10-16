@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="/style/style.css">
+    <link rel="shortcut icon" href="/style/image.png">
+    <title>Chat Realtime</title>
+</head>
+
+<body>
+    <h1>~ Welcome to our group chat ~</h1>
+    <div id="app">
+        <div v-if="state==0" class="box-area">
+            <h2>Choose your username</h2>
+            
+            <input  v-on:keyup.enter="setUsername" size="medium" type="text" placeholder="Username..." v-model="username">
+            <el-button type="primary" plain @click="setUsername">Join</el-button>
+            <br><br>
+            <el-button type="primary" plain @click="joinAnonymous">Join as Anonymous</el-button>
+        </div>
+
+        <div v-if="state==1">
+
+            <ul id="chat-box" class="box-area">
+                <li v-for="message in messages">
+                    <b> {{message.user}} : </b> {{message.message}}
+                </li>
+            </ul>
+            <input type="text" v-on:keyup.enter="sendMessage" placeholder="Message..." v-model="message">
+            <el-button type="primary" plain @click="sendMessage">Send</el-button>
+        </div>
+    </div>
+</body>
+
+
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var socket = null
+    var app = new Vue(
+        {
+            el: '#app',
+            data: {
+                message: '',
+                messages: [],
+                username: '',
+                state: 0
+            },
+            methods: {
+                sendMessage: function () {
+                    socket.emit('message', this.message)
+                    this.message = ''
+                },
+                setUsername: function () {
+                    socket.emit('join', this.username)
+                    // this.$route.params ///{idE: 34567}
+                    // this.$route.query ///{a: 'aaaaa'}
+                    this.username = ''
+                    this.state = 1;
+                },
+                joinAnonymous: function () {
+                    socket.emit('join', null)
+                    this.state = 1;
+                }
+            },
+            created:
+                function () {
+                    socket = io();
+                },
+            mounted:
+                function () {
+                    socket.on('message', function (message) {
+                        app.messages.push(message);
+                        // after VUE update the page
+                        app.$nextTick(function () {
+                            var messageBox = document.getElementById('chat-box');
+                            messageBox.scrollTop = messageBox.scrollHeight;
+                        });
+                    })
+                }
+        });
+</script>
+
+</html>

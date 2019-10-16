@@ -1,0 +1,17 @@
+{
+  "name": "chatapp",
+  "version": "1.0.0",
+  "description": "Chat app with Vue.js Node.js and Socket.IO",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "haa1010 <hang40338@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "element-ui": "^2.12.0",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "vue": "^2.6.10"
+  }
+}
